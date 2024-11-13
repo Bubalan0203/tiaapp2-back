@@ -4,7 +4,7 @@ const multer = require('multer');
 const uploadRouter = express.Router();
 
 // Set up multer to handle file uploads
-const storage = multer.memoryStorage();
+const storage = multer.memoryStorage(); // Store files in memory
 const upload = multer({ storage: storage });
 
 // Define routes

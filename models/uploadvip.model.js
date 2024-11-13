@@ -1,4 +1,3 @@
-// models/data.model.js
 const mongoose = require('mongoose');
 
 const dataSchema = new mongoose.Schema({
@@ -13,6 +12,7 @@ const dataSchema = new mongoose.Schema({
   },
 });
 
+// Create a unique index on month and year to prevent duplicate entries
 dataSchema.index({ month: 1, year: 1 }, { unique: true });
 
 module.exports = mongoose.model('Data', dataSchema);
