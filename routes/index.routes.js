@@ -6,7 +6,11 @@ const userRouter = require('./user.route');
 const uploadRouter = require('./uploadvip.route')
 const uploadvipfranchiseRouter =require('./uploadvipfranchise.route')
 const router = require("express").Router();
+const horouter = require('./ho.route');
+const productRouter = require('./product.route');
 
+router.use("/product",productRouter)
+router.use("/hostaff",horouter)
 router.use("/franchise",franchiseRouter)
 router.use("/vip",vipRouter)
 router.use("/sales",salesRouter)
