@@ -8,7 +8,9 @@ const uploadvipfranchiseRouter =require('./uploadvipfranchise.route')
 const router = require("express").Router();
 const horouter = require('./ho.route');
 const productRouter = require('./product.route');
+const uploadvipRouter =require('./uploadvipdata.route');
 
+router.use("/vipdata",uploadvipRouter)
 router.use("/product",productRouter)
 router.use("/hostaff",horouter)
 router.use("/franchise",franchiseRouter)
