@@ -1,4 +1,5 @@
 const Vipservice=require('../services/vip.service')
+
 async function createVip(req, res) {
     try {
       const vip = await Vipservice.createVip(req.body);

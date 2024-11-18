@@ -1,4 +1,5 @@
 const Salesservice=require('../services/sales.service')
+
 async function createSales(req, res) {
     try {
       const Sales = await Salesservice.createSales(req.body);

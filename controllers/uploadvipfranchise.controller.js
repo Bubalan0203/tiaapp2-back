@@ -14,14 +14,33 @@ exports.uploadExcel = async (req, res) => {
   }
 };
 
-// Check if a record exists for the given month and year
 exports.checkRecord = async (req, res) => {
   try {
     const { month, year } = req.query;
-    const monthYear = `${month} ${year}`;
 
-    const existingRecord = await uploadVIPFranchiseService.checkIfRecordExists(monthYear);
-    return res.status(200).json({ exists: existingRecord ? true : false });
+    // Return all records if both month and year are "All"
+    if (month === "All" && year === "All") {
+      const allRecords = await uploadVIPFranchiseService.getAllRecords();
+      return res.status(200).json({ exists: allRecords.length > 0, records: allRecords });
+    }
+
+    // If only month is "All", filter by year only
+    if (month === "All") {
+      const recordsByYear = await uploadVIPFranchiseService.getRecordsByYear(year);
+      return res.status(200).json({ exists: recordsByYear.length > 0, records: recordsByYear });
+    }
+
+    // If only year is "All", filter by month only
+    if (year === "All") {
+      const recordsByMonth = await uploadVIPFranchiseService.getRecordsByMonth(month);
+      return res.status(200).json({ exists: recordsByMonth.length > 0, records: recordsByMonth });
+    }
+
+    // Filter by specific month and year
+    const monthYear = `${month} ${year}`;
+    const recordsByMonthYear = await uploadVIPFranchiseService.getRecordsByMonthYear(monthYear);
+
+    return res.status(200).json({ exists: recordsByMonthYear.length > 0, records: recordsByMonthYear });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }

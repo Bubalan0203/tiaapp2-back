@@ -31,3 +31,15 @@ exports.processAndSaveData = async (totals, month, year, replace = false) => {
 exports.checkIfRecordExists = async (monthYear) => {
   return await UploadVIP.findOne({ monthYear });
 };
+
+exports.getAllRecords = async () => {
+  return await UploadVIP.find({});
+};
+
+exports.getRecordsByYear = async (year) => {
+  return await UploadVIP.find({ monthYear: { $regex: year } });
+};
+
+exports.getRecordsByMonth = async (month) => {
+  return await UploadVIP.find({ monthYear: { $regex: `^${month}` } });
+};

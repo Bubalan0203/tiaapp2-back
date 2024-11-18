@@ -9,15 +9,22 @@ const router = require("express").Router();
 const horouter = require('./ho.route');
 const productRouter = require('./product.route');
 const uploadvipRouter =require('./uploadvipdata.route');
+const uploadCompanyRouter = require('./company.route');
 
 router.use("/vipdata",uploadvipRouter)
+router.use("/companydata",uploadCompanyRouter)
 router.use("/product",productRouter)
 router.use("/hostaff",horouter)
 router.use("/franchise",franchiseRouter)
+
 router.use("/vip",vipRouter)
+
 router.use("/sales",salesRouter)
+
 router.use("/fsales",fsalesRouter)
+
 router.use("/users",userRouter)
+
 router.use("/uploadvip",uploadRouter)
 router.use("/vipfranchiseupload",uploadvipfranchiseRouter)
 module.exports={router};
