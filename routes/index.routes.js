@@ -10,7 +10,9 @@ const horouter = require('./ho.route');
 const productRouter = require('./product.route');
 const uploadvipRouter =require('./uploadvipdata.route');
 const uploadCompanyRouter = require('./company.route');
+const viprouter = require('./uploadvip.route')
 
+router.use("/vip1",viprouter)
 router.use("/vipdata",uploadvipRouter)
 router.use("/companydata",uploadCompanyRouter)
 router.use("/product",productRouter)

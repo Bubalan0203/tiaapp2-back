@@ -1,51 +1,59 @@
-const { calculateTotals, saveData, getDataByMonthYear } = require('../services/uploadvip.service');
 const XLSX = require('xlsx');
+const Franchise = require('../models/franchise.model');
 
-async function uploadFile(req, res) {
+// Upload Financial Data from Excel
+const uploadFinancialData = async (req, res) => {
   try {
-    const { file } = req; // Multer stores the uploaded file here
-    const { month, year } = req.body; // Month and year from request body
+    const { month, year } = req.body;
 
-    // Debugging logs
-    console.log('Month:', month);
-    console.log('Year:', year);
-    console.log('File:', file);
-
-    // Validate if file, month, and year are provided
-    if (!file || !month || !year) {
-      return res.status(400).json({ message: 'Please provide all required fields: file, month, year.' });
+    if (!req.file) {
+      return res.status(400).json({ error: 'Excel file is required.' });
     }
 
-    // Parse the Excel file using XLSX
-    const workbook = XLSX.read(file.buffer, { type: 'buffer' }); // Read the buffer from the file
-    const sheetName = workbook.SheetNames[0]; // Get the first sheet name
-    const sheet = workbook.Sheets[sheetName]; // Get the sheet object
-    const jsonData = XLSX.utils.sheet_to_json(sheet); // Convert sheet to JSON format
+    // Parse the Excel file
+    const workbook = XLSX.read(req.file.buffer, { type: 'buffer' });
+    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+    const rows = XLSX.utils.sheet_to_json(sheet);
 
-    // Check if data already exists for the given month and year
-    const existingData = await getDataByMonthYear(month, year);
+    // Process rows and update the database
+    for (const row of rows) {
+      const { FranchiseID, RoyaltyAmount, AmountPaid, AmountPending } = row;
 
-    if (existingData) {
-      return res.status(400).json({
-        message: `Data for ${month} ${year} already exists. Do you want to replace the existing data?`,
+      // Find the franchise by ID
+      const franchise = await Franchise.findOne({ franchiseId: FranchiseID });
+      if (!franchise) {
+        console.log(`Franchise with ID ${FranchiseID} not found.`);
+        continue;
+      }
+
+      // Check for duplicate records for the same month and year
+      const existingRecord = franchise.financialRecords.find(
+        (record) => record.month === month && record.year === parseInt(year)
+      );
+
+      if (existingRecord) {
+        return res.status(400).json({
+          error: `Record for ${month} ${year} already exists for FranchiseID ${FranchiseID}.`,
+        });
+      }
+
+      // Add new financial record
+      franchise.financialRecords.push({
+        month,
+        year,
+        royaltyAmount: RoyaltyAmount,
+        amountPaid: AmountPaid,
+        amountPending: AmountPending,
       });
+
+      await franchise.save();
     }
 
-    // Calculate totals from the parsed data
-    const totals = await calculateTotals(jsonData);  // Await the totals calculation
-
-    // Save the new data to the database
-    const savedData = await saveData(month, year, jsonData, totals);
-
-    // Return the success response
-    return res.status(200).json({
-      message: 'Data uploaded successfully!',
-      data: savedData,
-    });
+    res.status(200).json({ message: 'Financial data uploaded successfully.' });
   } catch (error) {
-    console.error('Error during file upload:', error);
-    return res.status(500).json({ message: 'Something went wrong while processing the file.' });
+    console.error(error);
+    res.status(500).json({ error: 'Server error.' });
   }
-}
+};
 
-module.exports = { uploadFile };
+module.exports = { uploadFinancialData };
