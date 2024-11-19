@@ -1,28 +1,37 @@
 const mongoose = require('mongoose');
 
-const FranchiseSchema = new mongoose.Schema({
-  franchiseName: { type: String, required: true }, // Name of the franchise
-  franchiseId: { type: String, required: true, unique: true }, // Unique ID of the franchise
-  branchName: { type: String, required: true }, // Branch name of the franchise
-
-  products: [{
-    product: { type: String, required: true }, // Name of the product
-    price: { type: Number, required: true },   // Price of the product
-    count: { type: Number, required: true },   // Number of products sold
-    total: { type: Number, required: true },   // Total cost (count * price)
-    paymentPaid: { type: Number, default: 0 }, // Total payment already paid for the product
-    paymentPending: { type: Number, default: 0 }, // Remaining payment to be made
-    addedDate: { type: Date, default: Date.now },
-
-    payments: [{
-      amount: { type: Number, required: true }, // Amount paid for the product
-      date: { type: Date, default: Date.now }    // Date when the payment was made
-    }]
-    
-  }]
+const FinancialRecordSchema = new mongoose.Schema({
+  month: { type: String, required: true },
+  year: { type: Number, required: true },
+  royaltyAmount: { type: Number, required: true },
+  amountPaid: { type: Number, required: true },
+  amountPending: { type: Number, required: true },
 });
 
-// Create the Franchise model using the FranchiseSchema
+const FranchiseSchema = new mongoose.Schema({
+  franchiseName: { type: String, required: true },
+  franchiseId: { type: String, required: true, unique: true },
+  branchName: { type: String, required: true },
+  products: [
+    {
+      product: { type: String, required: true },
+      price: { type: Number, required: true },
+      count: { type: Number, required: true },
+      total: { type: Number, required: true },
+      paymentPaid: { type: Number, default: 0 },
+      paymentPending: { type: Number, default: 0 },
+      addedDate: { type: Date, default: Date.now },
+      payments: [
+        {
+          amount: { type: Number, required: true },
+          date: { type: Date, default: Date.now },
+        },
+      ],
+    },
+  ],
+  financialRecords: [FinancialRecordSchema],
+});
+
 const Franchise = mongoose.model('Franchise', FranchiseSchema);
 
 module.exports = Franchise;
