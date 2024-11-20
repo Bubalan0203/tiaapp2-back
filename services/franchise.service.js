@@ -78,4 +78,20 @@ async function updateProductPayment(franchiseId, productId, paymentAmount) {
   }
 }
 
-module.exports = { createFranchise, getAllFranchise, getFranchiseById, addSalesToFranchise, updateProductPayment };
+async function deleteFranchise(franchiseId) {
+  try {
+    const deletedFranchise = await Franchise.findOneAndDelete({ franchiseId });
+    return deletedFranchise;
+  } catch (error) {
+    throw new Error(`Error deleting franchise: ${error.message}`);
+  }
+}
+
+module.exports = {
+  createFranchise,
+  getAllFranchise,
+  getFranchiseById,
+  addSalesToFranchise,
+  updateProductPayment,
+  deleteFranchise, // Export the delete function
+};

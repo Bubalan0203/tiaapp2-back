@@ -43,3 +43,8 @@ exports.getRecordsByYear = async (year) => {
 exports.getRecordsByMonth = async (month) => {
   return await UploadVIP.find({ monthYear: { $regex: `^${month}` } });
 };
+
+
+exports.deleteRecordByMonthYear = async (monthYear) => {
+  return await UploadVIP.deleteOne({ monthYear });
+};

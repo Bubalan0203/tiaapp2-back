@@ -63,4 +63,25 @@ async function updatePayment(req, res) {
   }
 }
 
-module.exports = { createFranchise, getAllFranchise, getFranchiseById, addSalesData, updatePayment };
+async function deleteFranchise(req, res) {
+  const { franchiseId } = req.params;
+
+  try {
+    const deletedFranchise = await franchiseservice.deleteFranchise(franchiseId);
+    if (!deletedFranchise) {
+      return res.status(404).json({ message: 'Franchise not found' });
+    }
+    res.status(200).json({ message: 'Franchise deleted successfully', franchise: deletedFranchise });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}
+
+module.exports = {
+  createFranchise,
+  getAllFranchise,
+  getFranchiseById,
+  addSalesData,
+  updatePayment,
+  deleteFranchise, // Export the delete function
+};

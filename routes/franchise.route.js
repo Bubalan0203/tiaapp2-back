@@ -10,4 +10,7 @@ franchiseRouter.post('/:franchiseId/sales', franchiseController.addSalesData);
 
 franchiseRouter.put('/:franchiseId/products/:productId/pay', franchiseController.updatePayment);
 
+franchiseRouter.delete('/:franchiseId', franchiseController.deleteFranchise);
+
+
 module.exports = franchiseRouter;
