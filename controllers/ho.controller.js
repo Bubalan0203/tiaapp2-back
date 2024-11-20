@@ -47,3 +47,16 @@ exports.getHostaffByHoId = async (req, res) => {
     }
 };
 ``
+// Controller to delete an HO staff record by hoId
+exports.deleteHostaff = async (req, res) => {
+    try {
+        const { hoId } = req.params;
+        const deletedHostaff = await hostaffService.deleteHostaff(hoId);
+        if (!deletedHostaff) {
+            return res.status(404).json({ error: 'Hostaff record not found' });
+        }
+        res.status(200).json({ message: 'Hostaff record deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};

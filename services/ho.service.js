@@ -26,3 +26,8 @@ exports.getAllHostaffs = async () => {
 exports.getHostaffByHoId = async (hoId) => {
     return await Hostaff.findOne({ hoId });
 };
+// Service to delete an HO staff record by hoId
+exports.deleteHostaff = async (hoId) => {
+    const deletedHostaff = await Hostaff.findOneAndDelete({ hoId });
+    return deletedHostaff;
+};
