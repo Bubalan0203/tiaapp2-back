@@ -42,3 +42,8 @@ exports.getRecordsByMonth = async (month) => {
 exports.getRecordsByMonthYear = async (monthYear) => {
   return await UploadVIPFranchise.find({ monthYear });
 };
+
+
+exports.deleteRecordByMonthYear = async (monthYear) => {
+  return await UploadVIPFranchise.findOneAndDelete({ monthYear });
+};
