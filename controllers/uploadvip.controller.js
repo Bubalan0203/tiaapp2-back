@@ -5,48 +5,67 @@ const Franchise = require('../models/franchise.model');
 const uploadFinancialData = async (req, res) => {
   try {
     const { month, year } = req.body;
+    const { overwrite } = req.query; // Read overwrite flag from query parameters
 
     if (!req.file) {
       return res.status(400).json({ error: 'Excel file is required.' });
     }
 
-    // Parse the Excel file
     const workbook = XLSX.read(req.file.buffer, { type: 'buffer' });
     const sheet = workbook.Sheets[workbook.SheetNames[0]];
     const rows = XLSX.utils.sheet_to_json(sheet);
 
-    // Process rows and update the database
+    const duplicateRecords = [];
+
     for (const row of rows) {
       const { FranchiseID, RoyaltyAmount, AmountPaid, AmountPending } = row;
 
-      // Find the franchise by ID
       const franchise = await Franchise.findOne({ franchiseId: FranchiseID });
       if (!franchise) {
         console.log(`Franchise with ID ${FranchiseID} not found.`);
         continue;
       }
 
-      // Check for duplicate records for the same month and year
-      const existingRecord = franchise.financialRecords.find(
+      // Find the index of the existing record for the given month/year
+      const existingRecordIndex = franchise.financialRecords.findIndex(
         (record) => record.month === month && record.year === parseInt(year)
       );
 
-      if (existingRecord) {
-        return res.status(400).json({
-          error: `Record for ${month} ${year} already exists for FranchiseID ${FranchiseID}.`,
+      if (existingRecordIndex >= 0 && overwrite !== 'true') {
+        // If record exists and overwrite is false, mark as duplicate
+        duplicateRecords.push({ FranchiseID, existingRecordIndex });
+        continue; // Skip replacing the record
+      }
+
+      if (existingRecordIndex >= 0 && overwrite === 'true') {
+        // Replace the existing record if overwrite flag is true
+        franchise.financialRecords[existingRecordIndex] = {
+          month,
+          year,
+          royaltyAmount: RoyaltyAmount,
+          amountPaid: AmountPaid,
+          amountPending: AmountPending,
+        };
+      } else {
+        // Add a new record if no existing record is found
+        franchise.financialRecords.push({
+          month,
+          year,
+          royaltyAmount: RoyaltyAmount,
+          amountPaid: AmountPaid,
+          amountPending: AmountPending,
         });
       }
 
-      // Add new financial record
-      franchise.financialRecords.push({
-        month,
-        year,
-        royaltyAmount: RoyaltyAmount,
-        amountPaid: AmountPaid,
-        amountPending: AmountPending,
-      });
-
       await franchise.save();
+    }
+
+    // If there are duplicates and overwrite is false, return a conflict
+    if (duplicateRecords.length > 0 && overwrite !== 'true') {
+      return res.status(409).json({
+        error: 'Duplicate records found.',
+        duplicateRecords,
+      });
     }
 
     res.status(200).json({ message: 'Financial data uploaded successfully.' });
