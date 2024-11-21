@@ -1,7 +1,7 @@
 const UploadCompany = require('../models/company.model');
 
 exports.processAndSaveData = async (totals, month, year, replace = false) => {
-  const monthYear = `${month} ${year}`;
+  const monthYear = `${month} ${year}`; 
 
   // Check if record exists and handle replacement
   const existingRecord = await UploadCompany.findOne({ monthYear });
@@ -42,4 +42,9 @@ exports.getRecordsByYear = async (year) => {
 
 exports.getRecordsByMonth = async (month) => {
   return await UploadCompany.find({ monthYear: { $regex: `^${month}` } });
+};
+
+
+exports.deleteRecordByMonthYear = async (monthYear) => {
+  return await UploadCompany.findOneAndDelete({ monthYear });
 };
