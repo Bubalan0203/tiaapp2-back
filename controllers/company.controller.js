@@ -1,5 +1,5 @@
 const uploadCompanyService = require('../services/company.service');
-
+ 
 exports.uploadExcel = async (req, res) => {
   try {
     const { totals, month, year, replace = false } = req.body;
@@ -49,4 +49,28 @@ exports.checkRecord = async (req, res) => {
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
+};
+
+
+exports.deleteRecord = async (req, res) => {
+  try {
+    const { month, year } = req.query;
+
+    if (!month || !year) {
+      return res.status(400).json({ message: 'Month and Year are required' });
+    }
+
+    const monthYear = `${month} ${year}`;
+
+    // Call the service to delete the record
+    const result = await uploadCompanyService.deleteRecordByMonthYear(monthYear);
+
+    if (!result) {
+      return res.status(404).json({ message: `No record found for ${monthYear}` });
+    }
+
+    return res.status(200).json({ message: `Record for ${monthYear} deleted successfully` });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  } 
 };

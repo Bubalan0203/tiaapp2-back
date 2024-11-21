@@ -6,6 +6,8 @@ const FsalesSchema = new mongoose.Schema({
     price:{type:String,required:true},
     count:{type:Number,required:true},
     total:{type:String,required:true}
+}, {
+    timestamps: { createdAt: true, updatedAt: false } // Automatically adds createdAt field
 });
 
 const Fsales = mongoose.model('Fsales', FsalesSchema);

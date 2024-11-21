@@ -5,4 +5,9 @@ async function createSales(salesdata) {
   async function getAllSales() {
     return await Sales.find();
   }
-module.exports={createSales,getAllSales}
+  async function deleteSalesByDescription(description) {
+    return await Sales.deleteOne({ description });
+  }
+  
+  module.exports = { createSales, getAllSales, deleteSalesByDescription };
+  

@@ -16,4 +16,21 @@ async function createSales(req, res) {
       res.status(500).json({ error: error.message });
     }
   }
-module.exports={createSales,getAllSales}
+  async function deleteSalesByDescription(req, res) {
+    try {
+      const { description } = req.body;
+      if (!description) {
+        return res.status(400).json({ error: "Description is required to delete a record" });
+      }
+      const deletedRecord = await Salesservice.deleteSalesByDescription(description);
+      if (!deletedRecord.deletedCount) {
+        return res.status(404).json({ error: "No record found with the provided description" });
+      }
+      res.json({ message: "Record deleted successfully" });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
+  
+  module.exports = { createSales, getAllSales, deleteSalesByDescription };
+  
