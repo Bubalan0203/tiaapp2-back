@@ -7,7 +7,8 @@ const UploadVIPFranchiseSchema = new mongoose.Schema({
     required: true // Format: "Month Year" (e.g., "October 2024")
   },
   totals: {
-    collection: { type: Number, required: true },
+    collection: { type: Number, required: true }, 
+    revenue: { type: Number, required: true },
     totalPayment: { type: Number, required: true },
     paymentPaid: { type: Number, required: true },
     paymentPending: { type: Number, required: true }

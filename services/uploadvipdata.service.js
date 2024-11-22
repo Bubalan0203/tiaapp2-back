@@ -1,50 +1,106 @@
 const UploadVIP = require('../models/uploadvipdata.model');
 
 exports.processAndSaveData = async (totals, month, year, replace = false) => {
-  const monthYear = `${month} ${year}`;
+  try {
+    const monthYear = `${month} ${year}`;
 
-  // Check if record exists and handle replacement
-  const existingRecord = await UploadVIP.findOne({ monthYear });
+    // Validate totals object
+    if (
+      !totals ||
+      !totals.collection || 
+      !totals.revenue || 
+      !totals.additionalRevenue || 
+      !totals.totalPayment || 
+      !totals.paymentPaid || 
+      !totals.paymentPending
+    ) {
+      throw new Error('Missing required totals fields.');
+    }
 
-  if (existingRecord && !replace) {
-    throw new Error(`Record already exists for ${monthYear}`);
+    // Check if the record exists
+    const existingRecord = await UploadVIP.findOne({ monthYear });
+
+    // If replacing, update the existing record
+    if (existingRecord && replace) {
+      existingRecord.totals = totals;
+      await existingRecord.save();
+      return { message: `Data successfully replaced for ${monthYear}`, totals };
+    }
+
+    // If a record exists and replacement is not allowed, throw an error
+    if (existingRecord && !replace) {
+      throw new Error(`Record already exists for ${monthYear}. Use replace=true to overwrite`);
+    }
+
+    // Create a new record if no existing record is found
+    const newRecord = new UploadVIP({
+      monthYear,
+      totals,
+    });
+
+    await newRecord.save();
+    return { message: `Data successfully uploaded for ${monthYear}`, totals };
+  } catch (error) {
+    console.error('Error in processAndSaveData:', error);
+    throw error;
   }
-
-  // If replacing, update the existing record, otherwise create a new one
-  if (existingRecord && replace) {
-    existingRecord.totals = totals;
-    await existingRecord.save();
-    return { message: `Data successfully replaced for ${monthYear}`, totals };
-  }
-
-  const newRecord = new UploadVIP({
-    monthYear,
-    totals
-  });
-
-  await newRecord.save();
-
-  return { message: `Data successfully uploaded for ${monthYear}`, totals };
 };
 
 // Check if a record exists for a specific month and year
 exports.checkIfRecordExists = async (monthYear) => {
-  return await UploadVIP.findOne({ monthYear });
+  try {
+    const record = await UploadVIP.findOne({ monthYear });
+    if (!record) {
+      console.log("No record found for", monthYear);
+    }
+    return record;
+  } catch (error) {
+    console.error('Error in checkIfRecordExists:', error);
+    throw error;
+  }
 };
 
+
+// Get all records from the database
 exports.getAllRecords = async () => {
-  return await UploadVIP.find({});
+  try {
+    return await UploadVIP.find({});
+  } catch (error) {
+    console.error('Error in getAllRecords:', error);
+    throw error;
+  }
 };
 
+// Get records filtered by year
 exports.getRecordsByYear = async (year) => {
-  return await UploadVIP.find({ monthYear: { $regex: year } });
+  try {
+    return await UploadVIP.find({ monthYear: { $regex: year, $options: 'i' } });
+  } catch (error) {
+    console.error('Error in getRecordsByYear:', error);
+    throw error;
+  }
 };
 
+// Get records filtered by month
 exports.getRecordsByMonth = async (month) => {
-  return await UploadVIP.find({ monthYear: { $regex: `^${month}` } });
+  try {
+    return await UploadVIP.find({ monthYear: { $regex: `^${month}`, $options: 'i' } });
+  } catch (error) {
+    console.error('Error in getRecordsByMonth:', error);
+    throw error;
+  }
 };
 
-
+// Delete a record by month and year
 exports.deleteRecordByMonthYear = async (monthYear) => {
-  return await UploadVIP.deleteOne({ monthYear });
+  try {
+    const result = await UploadVIP.deleteOne({ monthYear });
+    if (result.deletedCount === 0) {
+      throw new Error(`No record found for ${monthYear}`);
+    }
+    return { message: `Record for ${monthYear} deleted successfully.` };
+  } catch (error) {
+    console.error('Error in deleteRecordByMonthYear:', error);
+    throw error;
+  }
 };
