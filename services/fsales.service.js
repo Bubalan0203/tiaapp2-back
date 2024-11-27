@@ -5,4 +5,7 @@ async function createFsales(fsalesdata) {
   async function getAllFsales() {
     return await Fsales.find();
   }
-module.exports={createFsales,getAllFsales}
+  async function deleteSalesById(id) {
+    return await Fsales.deleteOne({ _id: id });
+  }
+module.exports={createFsales,getAllFsales,deleteSalesById}

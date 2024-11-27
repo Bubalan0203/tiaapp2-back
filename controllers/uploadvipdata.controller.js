@@ -49,7 +49,6 @@ exports.checkRecord = async (req, res) => {
     } else {
       return res.status(200).json({
         recordExists: false,
-        message: `No record found for ${monthYear}. You can upload new data.`
       }); // No record found, so it’s safe to upload
     }
   } catch (error) {
@@ -77,7 +76,7 @@ exports.deleteByMonthYear = async (req, res) => {
     if (result.deletedCount > 0) {
       return res.status(200).json({ message: `Record for ${monthYear} successfully deleted.` });
     } else {
-      return res.status(404).json({ message: `No record found for ${monthYear}.` });
+      return res.status(404).json({  message: `Record for ${monthYear} successfully deleted.` });
     }
   } catch (error) {
     console.error('Error deleting record:', error);

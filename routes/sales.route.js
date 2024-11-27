@@ -5,7 +5,9 @@ const salesController=require('../controllers/sales.controller')
 salesRouter.post('/', salesController.createSales);
 
 salesRouter.get('/', salesController.getAllSales);
-salesRouter.delete('/', salesController.deleteSalesByDescription);
+
+salesRouter.delete('/:id', salesController.deleteSalesById);
+
 
 
 module.exports=salesRouter;

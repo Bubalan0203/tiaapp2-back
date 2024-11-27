@@ -15,16 +15,15 @@ async function createSales(req, res) {
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
-  }
-  async function deleteSalesByDescription(req, res) {
+  }async function deleteSalesById(req, res) {
     try {
-      const { description } = req.body;
-      if (!description) {
-        return res.status(400).json({ error: "Description is required to delete a record" });
+      const { id } = req.params; // Retrieve `id` from route parameters
+      if (!id) {
+        return res.status(400).json({ error: "ID is required to delete a record" });
       }
-      const deletedRecord = await Salesservice.deleteSalesByDescription(description);
+      const deletedRecord = await Salesservice.deleteSalesById(id);
       if (!deletedRecord.deletedCount) {
-        return res.status(404).json({ error: "No record found with the provided description" });
+        return res.status(404).json({ error: "No record found with the provided ID" });
       }
       res.json({ message: "Record deleted successfully" });
     } catch (error) {
@@ -32,5 +31,9 @@ async function createSales(req, res) {
     }
   }
   
-  module.exports = { createSales, getAllSales, deleteSalesByDescription };
+  module.exports = { 
+    createSales, 
+    getAllSales, 
+    deleteSalesById 
+  };
   

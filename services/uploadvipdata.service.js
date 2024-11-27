@@ -4,18 +4,20 @@ exports.processAndSaveData = async (totals, month, year, replace = false) => {
   try {
     const monthYear = `${month} ${year}`;
 
-    // Validate totals object
-    if (
-      !totals ||
-      !totals.collection || 
-      !totals.revenue || 
-      !totals.additionalRevenue || 
-      !totals.totalPayment || 
-      !totals.paymentPaid || 
-      !totals.paymentPending
-    ) {
-      throw new Error('Missing required totals fields.');
-    }
+   // Validate totals object
+if (
+  !totals ||
+  totals.collection === undefined ||
+  totals.revenue === undefined ||
+  totals.additionalRevenue === undefined ||
+  totals.totalPayment === undefined ||
+  totals.paymentPaid === undefined ||
+  totals.paymentPending === undefined
+) {
+  throw new Error('Missing required totals fields.');
+}
+
+    
 
     // Check if the record exists
     const existingRecord = await UploadVIP.findOne({ monthYear });
@@ -51,7 +53,7 @@ exports.checkIfRecordExists = async (monthYear) => {
   try {
     const record = await UploadVIP.findOne({ monthYear });
     if (!record) {
-      console.log("No record found for", monthYear);
+      
     }
     return record;
   } catch (error) {
@@ -96,7 +98,7 @@ exports.deleteRecordByMonthYear = async (monthYear) => {
   try {
     const result = await UploadVIP.deleteOne({ monthYear });
     if (result.deletedCount === 0) {
-      throw new Error(`No record found for ${monthYear}`);
+      throw new Error();
     }
     return { message: `Record for ${monthYear} deleted successfully.` };
   } catch (error) {

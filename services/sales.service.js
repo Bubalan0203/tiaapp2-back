@@ -4,10 +4,11 @@ async function createSales(salesdata) {
   }
   async function getAllSales() {
     return await Sales.find();
-  }
-  async function deleteSalesByDescription(description) {
-    return await Sales.deleteOne({ description });
+  } 
+
+  async function deleteSalesById(id) {
+    return await Sales.deleteOne({ _id: id });
   }
   
-  module.exports = { createSales, getAllSales, deleteSalesByDescription };
+  module.exports = { createSales, getAllSales, deleteSalesById };
   
