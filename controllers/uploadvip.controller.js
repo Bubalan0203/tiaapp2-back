@@ -18,11 +18,11 @@ const uploadFinancialData = async (req, res) => {
     const duplicateRecords = [];
 
     for (const row of rows) {
-      const { FranchiseID, RoyaltyAmount, AmountPaid, AmountPending } = row;
+      const { Email, RoyaltyAmount, AmountPaid, AmountPending } = row;
 
-      const franchise = await Franchise.findOne({ franchiseId: FranchiseID });
+      const franchise = await Franchise.findOne({ franchiseId: Email });
       if (!franchise) {
-        console.log(`Franchise with ID ${FranchiseID} not found.`);
+        console.log(`Franchise with ID ${Email} not found.`);
         continue;
       }
 
@@ -33,7 +33,7 @@ const uploadFinancialData = async (req, res) => {
 
       if (existingRecordIndex >= 0 && overwrite !== 'true') {
         // If record exists and overwrite is false, mark as duplicate
-        duplicateRecords.push({ FranchiseID, existingRecordIndex });
+        duplicateRecords.push({ Email, existingRecordIndex });
         continue; // Skip replacing the record
       }
 
