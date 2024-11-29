@@ -63,35 +63,31 @@ exports.checkIfRecordExists = async (monthYear) => {
 };
 
 
-// Get all records from the database
 exports.getAllRecords = async () => {
-  try {
-    return await UploadVIP.find({});
-  } catch (error) {
-    console.error('Error in getAllRecords:', error);
-    throw error;
-  }
+  return await UploadVIP.find();
 };
 
-// Get records filtered by year
-exports.getRecordsByYear = async (year) => {
-  try {
-    return await UploadVIP.find({ monthYear: { $regex: year, $options: 'i' } });
-  } catch (error) {
-    console.error('Error in getRecordsByYear:', error);
-    throw error;
-  }
-};
-
-// Get records filtered by month
+// Example: Query to get records by month
 exports.getRecordsByMonth = async (month) => {
-  try {
-    return await UploadVIP.find({ monthYear: { $regex: `^${month}`, $options: 'i' } });
-  } catch (error) {
-    console.error('Error in getRecordsByMonth:', error);
-    throw error;
-  }
+  return await UploadVIP.find({ monthYear: new RegExp(`^${month}`, 'i') });
 };
+
+// Example: Query to get records by year
+exports.getRecordsByYear = async (year) => {
+  return await UploadVIP.find({ monthYear: new RegExp(`${year}$`, 'i') });
+};
+
+
+exports.getRecordsByMonthYear = async (monthYear) => {
+  return await UploadVIP.find({ monthYear });
+};
+
+
+
+exports.getRecordsByMonthYear = async (monthYear) => {
+  return await UploadVIP.find({ monthYear });
+};
+
 
 // Delete a record by month and year
 exports.deleteRecordByMonthYear = async (monthYear) => {

@@ -19,40 +19,34 @@ exports.uploadExcel = async (req, res) => {
   }
 };
 
-// Check if a record exists for the given month and year or return filtered records
-// Check if a record exists for the given month and year or return filtered records
 exports.checkRecord = async (req, res) => {
   try {
-    const { month, year } = req.query;   // Handle cases where "All" is provided for either month or year
-    if (month === 'All' && year === 'All') {
-      const allRecords = await uploadVIPService.getAllRecords(); // Fetch all records
-      return res.status(200).json(allRecords);
+    const { month, year } = req.query;
+
+    // Return all records if both month and year are "All"
+    if (month === "All" && year === "All") {
+      const allRecords = await uploadVIPService.getAllRecords();
+      return res.status(200).json({ exists: allRecords.length > 0, records: allRecords });
     }
 
-    if (month === 'All') {
-      const recordsByYear = await uploadVIPService.getRecordsByYear(year); // Filter by year only
-      return res.status(200).json(recordsByYear);
+    // If only month is "All", filter by year only
+    if (month === "All") {
+      const recordsByYear = await uploadVIPService.getRecordsByYear(year);
+      return res.status(200).json({ exists: recordsByYear.length > 0, records: recordsByYear });
     }
 
-    if (year === 'All') {
-      const recordsByMonth = await uploadVIPService.getRecordsByMonth(month); // Filter by month only
-      return res.status(200).json(recordsByMonth);
+    // If only year is "All", filter by month only
+    if (year === "All") {
+      const recordsByMonth = await uploadVIPService.getRecordsByMonth(month);
+      return res.status(200).json({ exists: recordsByMonth.length > 0, records: recordsByMonth });
     }
 
-    // Combine month and year for precise filtering
+    // Filter by specific month and year
     const monthYear = `${month} ${year}`;
-    
-    const existingRecord = await uploadVIPService.checkIfRecordExists(monthYear);
-    if (existingRecord) {
-      return res.status(200).json({ exists:true, records: existingRecord });
-       // Return a response with a flag indicating the record exists
-    } else {
-      return res.status(200).json({
-        recordExists: false,
-      }); // No record found, so it’s safe to upload
-    }
+    const recordsByMonthYear = await uploadVIPService.getRecordsByMonthYear(monthYear);
+
+    return res.status(200).json({ exists: recordsByMonthYear.length > 0, records: recordsByMonthYear });
   } catch (error) {
-    console.error('Error in checkRecord:', error);
     return res.status(500).json({ message: error.message });
   }
 };
