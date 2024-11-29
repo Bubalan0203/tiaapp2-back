@@ -1,10 +1,14 @@
 const express=require("express");
 const helmet = require('helmet');
-const CORS=require('cors');
+const cors=require('cors');
 const { router } = require("./routes/index.routes");
 const app=express()
 
-app.use(CORS()); // Enable CORS for all routes
+app.use(cors({
+   origin: '*', 
+ methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], 
+   allowedHeaders: ['Content-Type', 'Authorization'] 
+}));
 app.use(express.json()); // Parse JSON bodies
 app.use(helmet()); // Apply Helmet middleware for security headers
 
