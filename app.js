@@ -12,6 +12,6 @@ app.use(cors({
 app.use(express.json()); // Parse JSON bodies
 app.use(helmet()); // Apply Helmet middleware for security headers
 
-app.use(router);
+app.use('/api', router);
 
 module.exports={app}
