@@ -2,7 +2,7 @@ const { default: mongoose } = require('mongoose');
 const { app } = require('./app');
 require('dotenv').config();
 
-const PORT = process.env.PORT || 3000; // Default port is 3000 if not specified in .env file
+const PORT = process.env.PORT || 8081; // Default port is 3000 if not specified in .env file
 
 app.listen(PORT, async() => {
     try {
